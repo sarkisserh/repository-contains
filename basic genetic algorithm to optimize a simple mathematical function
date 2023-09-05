@@ -1,0 +1,43 @@
+import random
+
+# Define the Rosenbrock function
+def rosenbrock(x, y):
+    return (1 - x)**2 + 100 * (y - x**2)**2
+
+# Genetic algorithm parameters
+population_size = 100
+num_generations = 100
+mutation_rate = 0.1
+
+# Initialize the population with random solutions
+population = [(random.uniform(-5, 5), random.uniform(-5, 5)) for _ in range(population_size)]
+
+# Main optimization loop
+for generation in range(num_generations):
+    # Evaluate the fitness of each individual in the population
+    fitness_scores = [rosenbrock(x, y) for x, y in population]
+    
+    # Select the top individuals to be parents
+    num_parents = int(population_size * 0.2)
+    parents = [population[i] for i in range(num_parents)]
+    
+    # Create a new population through crossover and mutation
+    new_population = []
+    while len(new_population) < population_size:
+        parent1, parent2 = random.choices(parents, k=2)
+        child = (
+            (parent1[0] + parent2[0]) / 2,
+            (parent1[1] + parent2[1]) / 2
+        )
+        if random.random() < mutation_rate:
+            child = (child[0] + random.uniform(-0.1, 0.1), child[1] + random.uniform(-0.1, 0.1))
+        new_population.append(child)
+    
+    population = new_population
+
+# Find the best solution in the final population
+best_solution = min(population, key=lambda x: rosenbrock(x[0], x[1]))
+best_fitness = rosenbrock(best_solution[0], best_solution[1])
+
+print(f"Best solution found: x = {best_solution[0]}, y = {best_solution[1]}")
+print(f"Minimum value of the Rosenbrock function: {best_fitness}")
