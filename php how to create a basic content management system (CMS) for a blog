@@ -1,0 +1,80 @@
+<?php
+// Database configuration (you need to replace these with your own database credentials)
+$host = 'localhost';
+$username = 'your_username';
+$password = 'your_password';
+$database = 'your_database';
+
+// Create a database connection
+$conn = new mysqli($host, $username, $password, $database);
+
+// Check the connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+// Function to create a new blog post
+function createPost($title, $content) {
+    global $conn;
+    $sql = "INSERT INTO posts (title, content) VALUES ('$title', '$content')";
+    if ($conn->query($sql) === TRUE) {
+        return "New post created successfully!";
+    } else {
+        return "Error: " . $sql . "<br>" . $conn->error;
+    }
+}
+
+// Function to retrieve all blog posts
+function getAllPosts() {
+    global $conn;
+    $sql = "SELECT * FROM posts";
+    $result = $conn->query($sql);
+    $posts = [];
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            $posts[] = $row;
+        }
+    }
+    return $posts;
+}
+
+// Function to update a blog post
+function updatePost($id, $title, $content) {
+    global $conn;
+    $sql = "UPDATE posts SET title='$title', content='$content' WHERE id=$id";
+    if ($conn->query($sql) === TRUE) {
+        return "Post updated successfully!";
+    } else {
+        return "Error updating post: " . $conn->error;
+    }
+}
+
+// Function to delete a blog post
+function deletePost($id) {
+    global $conn;
+    $sql = "DELETE FROM posts WHERE id=$id";
+    if ($conn->query($sql) === TRUE) {
+        return "Post deleted successfully!";
+    } else {
+        return "Error deleting post: " . $conn->error;
+    }
+}
+
+// Example usage
+echo createPost("Sample Post", "This is a sample blog post.");
+echo "<br>";
+echo updatePost(1, "Updated Post", "This post has been updated.");
+echo "<br>";
+echo deletePost(2);
+
+// Display all blog posts
+$posts = getAllPosts();
+foreach ($posts as $post) {
+    echo "<h2>{$post['title']}</h2>";
+    echo "<p>{$post['content']}</p>";
+    echo "<hr>";
+}
+
+// Close the database connection
+$conn->close();
+?>
